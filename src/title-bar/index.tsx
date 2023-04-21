@@ -15,6 +15,7 @@ const TitleBar = ({
   onMaximize,
   onClose,
   onDoubleClick,
+  onMenuItemClicked,
   disableMaximize,
   disableMinimize,
   disableClose,
@@ -68,6 +69,7 @@ const TitleBar = ({
               focused={focused}
               menu={menu}
               currentWindow={currentWindow}
+              onMenuItemClicked={onMenuItemClicked}
             />
           )}
           {vertical && hasIcon && (
@@ -99,6 +101,7 @@ const TitleBar = ({
                 focused={focused}
                 menu={menu}
                 currentWindow={currentWindow}
+                onMenuItemClicked={onMenuItemClicked}
               />
             )}
           </Bar>

@@ -1,15 +1,21 @@
-import React, { useContext, useRef, RefObject } from 'react';
-import styles from '../style.css';
-import MenuItem from './menu-item';
-import { ThemeContext } from '../theme';
+import React, { useContext, useRef, RefObject } from "react";
+import styles from "../style.css";
+import MenuItem from "./menu-item";
+import { ThemeContext } from "../theme";
 import {
   useRect,
   useMenuScroll,
   useLayoutBounds,
-  useScrollFocus
-} from '../effects';
-import { currentSelected, menuItemClick, calcMaximums } from '../utils';
-import { MenuListProps, FullMenuListProps } from '../typings';
+  useScrollFocus,
+} from "../effects";
+import {
+  currentSelected,
+  menuItemClick,
+  calcMaximums,
+  MenuClickClickContext,
+  handleMenuItemClick,
+} from "../utils";
+import { MenuListProps, FullMenuListProps } from "../typings";
 
 const MenuList = ({
   menu,
@@ -18,7 +24,7 @@ const MenuList = ({
   depth,
   selectedPath,
   dispatch,
-  subLabel
+  subLabel,
 }: FullMenuListProps) => {
   const theme = useContext(ThemeContext);
   const menuRef = useRef(null);
@@ -26,7 +32,11 @@ const MenuList = ({
   const parentBounds = useRect(parentRef);
   const bounds = useRect(menuRef);
   const [maxHeight, maxWidth] = calcMaximums(bounds, theme);
-  const hasSubLabel = !!(subLabel && subLabel !== "" && theme.menu.header!.show!);
+  const hasSubLabel = !!(
+    subLabel &&
+    subLabel !== "" &&
+    theme.menu.header!.show!
+  );
   const layout = useLayoutBounds(parentBounds, depth, hasSubLabel);
   const handleScroll = useMenuScroll(scrollRef);
   useScrollFocus(
@@ -35,6 +45,8 @@ const MenuList = ({
     parentBounds,
     scrollRef
   );
+  const clickctx = React.useContext(MenuClickClickContext);
+
   return (
     <div
       className={styles.MenuListContainer}
@@ -44,29 +56,26 @@ const MenuList = ({
         left: layout.left,
         zIndex: theme.menu.list!.zIndex!,
         background: theme.menu.list!.background,
-        boxShadow: theme.menu.list!.boxShadow
+        boxShadow: theme.menu.list!.boxShadow,
       }}
       ref={menuRef}
     >
-      {
-        hasSubLabel &&
+      {hasSubLabel && (
         <div
           className={styles.SubMenuLabel}
           style={{
-            color: theme.menu.header?.color
+            color: theme.menu.header?.color,
           }}
         >
           {subLabel}
         </div>
-      }
-      <div
-        className={styles.MenuListScrollView}
-      >
+      )}
+      <div className={styles.MenuListScrollView}>
         <div
           className={styles.MenuList}
           style={{
             maxHeight,
-            maxWidth
+            maxWidth,
           }}
           onWheel={handleScroll}
           ref={scrollRef}
@@ -74,7 +83,7 @@ const MenuList = ({
           <div
             className={styles.MenuListVertical}
             style={{
-              padding: hasSubLabel ? '0px 0px 5px 0px' : '5px 0px'
+              padding: hasSubLabel ? "0px 0px 5px 0px" : "5px 0px",
             }}
           >
             <ul className={styles.MenuListItems}>
@@ -88,9 +97,26 @@ const MenuList = ({
                     depth={depth}
                     selectedPath={selectedPath}
                     dispatch={dispatch}
-                    onClick={e =>
-                      menuItemClick(e, idx, item, menu, dispatch, currentWindow)
-                    }
+                    onClick={(e) => {
+                      if (
+                        clickctx.onMenuItemClicked &&
+                        !item.disabled &&
+                        item.type !== "submenu" &&
+                        !item.submenu
+                      ) {
+                        clickctx.onMenuItemClicked(item);
+                        handleMenuItemClick(idx, item, menu, dispatch);
+                        return;
+                      }
+                      menuItemClick(
+                        e,
+                        idx,
+                        item,
+                        menu,
+                        dispatch,
+                        currentWindow
+                      );
+                    }}
                   />
                 ))}
             </ul>
@@ -107,4 +133,3 @@ export default React.forwardRef<HTMLElement, MenuListProps>((props, ref) => (
   // eslint-disable-next-line react/jsx-props-no-spreading
   <MenuList {...props} parentRef={ref as RefObject<HTMLElement>} />
 ));
-

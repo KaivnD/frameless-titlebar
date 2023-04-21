@@ -30,6 +30,7 @@ export interface WindowControlsProps extends ControlProps {
 }
 
 export interface TitleBarProps extends ControlProps {
+  onMenuItemClicked?: (item: MenuItem) => void;
   onDoubleClick?: (e: React.MouseEvent) => void;
   platform?: Platform;
   children?: React.ReactNode;
@@ -172,6 +173,7 @@ export interface MenuBarProps {
   menu?: MenuItem[];
   focused: boolean;
   currentWindow?: object;
+  onMenuItemClicked?: (item: MenuItem) => void;
 }
 
 export interface MenuItemProps {
