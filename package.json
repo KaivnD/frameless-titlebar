@@ -1,6 +1,6 @@
 {
   "name": "frameless-titlebar-fork",
-  "version": "2.1.5",
+  "version": "2.1.6",
   "description": "Customizable titlebar for frameless Electron desktop applications and others, fork from Cristian006",
   "author": "KaivnD",
   "license": "MIT",
@@ -26,7 +26,7 @@
     "deepmerge": "^4.2.2"
   },
   "peerDependencies": {
-    "react": "^16.9.0"
+    "react": ">= 16.9.0"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",
